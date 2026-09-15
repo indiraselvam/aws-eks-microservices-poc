@@ -1,0 +1,3 @@
+# Optional: reserved for future least-privilege service-account work.
+# The application does not require Kubernetes API access, so no service account
+# token is mounted by default in this POC.
