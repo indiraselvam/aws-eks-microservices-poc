@@ -91,15 +91,15 @@ jobs:
           kubectl apply -f k8s/backend-deployment.yaml
           kubectl apply -f k8s/frontend-deployment.yaml
 
-      - name: Set immutable image tags
-        env:
-          REGISTRY: ${{ steps.vars.outputs.registry }}
-          TAG: ${{ steps.vars.outputs.tag }}
-        run: |
-          kubectl -n "$NAMESPACE" set image deployment/backend \
-            backend="$REGISTRY/$BACKEND_REPO:$TAG"
-          kubectl -n "$NAMESPACE" set image deployment/frontend \
-            frontend="$REGISTRY/$FRONTEND_REPO:$TAG"
+      # - name: Set immutable image tags
+      #   env:
+      #     REGISTRY: ${{ steps.vars.outputs.registry }}
+      #     TAG: ${{ steps.vars.outputs.tag }}
+      #   run: |
+      #     kubectl -n "$NAMESPACE" set image deployment/backend \
+      #       backend="$REGISTRY/$BACKEND_REPO:$TAG"
+      #     kubectl -n "$NAMESPACE" set image deployment/frontend \
+      #       frontend="$REGISTRY/$FRONTEND_REPO:$TAG"
 
       - name: Wait for backend rollout
         run: |
