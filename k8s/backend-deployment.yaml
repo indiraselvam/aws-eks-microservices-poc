@@ -24,7 +24,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: REPLACE_BACKEND_IMAGE
+          image: 000000000000.dkr.ecr.ap-south-1.amazonaws.com/poc-backend:init
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
