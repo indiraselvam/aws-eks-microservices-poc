@@ -7,7 +7,7 @@ on:
 
 permissions:
   id-token: write
-  contents: read
+  contents: write
 
 env:
   AWS_REGION: ap-south-1
@@ -83,6 +83,32 @@ jobs:
             --from-literal=DB_PASSWORD="$DB_PASSWORD" \
             --dry-run=client -o yaml | kubectl apply -f -
 
+
+
+      - name: Update image tags in Kubernetes manifests
+        env:
+          REGISTRY: ${{ steps.vars.outputs.registry }}
+          TAG: ${{ steps.vars.outputs.tag }}
+        run: |
+          sed -i "s|image:.*poc-frontend:.*|image: $REGISTRY/$FRONTEND_REPO:$TAG|g" k8s/frontend-deployment.yaml
+          sed -i "s|image:.*poc-backend:.*|image: $REGISTRY/$BACKEND_REPO:$TAG|g" k8s/backend-deployment.yaml
+
+          echo "Updated frontend image:"
+          grep "image:" k8s/frontend-deployment.yaml
+
+          echo "Updated backend image:"
+          grep "image:" k8s/backend-deployment.yaml
+
+      - name: Commit and push updated manifests
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add k8s/frontend-deployment.yaml k8s/backend-deployment.yaml
+
+          git diff --cached --quiet || git commit -m "Update image tags to ${GITHUB_SHA}"
+
+          git push
       - name: Apply Kubernetes manifests
         run: |
           kubectl apply -f k8s/namespace.yaml
@@ -90,17 +116,6 @@ jobs:
           kubectl apply -f k8s/frontend-service.yaml
           kubectl apply -f k8s/backend-deployment.yaml
           kubectl apply -f k8s/frontend-deployment.yaml
-
-      - name: Set immutable image tags
-        env:
-          REGISTRY: ${{ steps.vars.outputs.registry }}
-          TAG: ${{ steps.vars.outputs.tag }}
-        run: |
-          kubectl -n "$NAMESPACE" set image deployment/backend \
-            backend="$REGISTRY/$BACKEND_REPO:$TAG"
-          kubectl -n "$NAMESPACE" set image deployment/frontend \
-            frontend="$REGISTRY/$FRONTEND_REPO:$TAG"
-
       - name: Wait for backend rollout
         run: |
           kubectl rollout status deployment/backend \
