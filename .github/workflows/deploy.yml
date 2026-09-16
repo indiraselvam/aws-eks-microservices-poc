@@ -83,8 +83,6 @@ jobs:
             --from-literal=DB_PASSWORD="$DB_PASSWORD" \
             --dry-run=client -o yaml | kubectl apply -f -
 
-
-
       - name: Update image tags in Kubernetes manifests
         env:
           REGISTRY: ${{ steps.vars.outputs.registry }}
@@ -108,7 +106,15 @@ jobs:
 
           git diff --cached --quiet || git commit -m "Update image tags to ${GITHUB_SHA}"
 
-          git push
+          # Retry push with rebase in case the remote moved since checkout
+          for i in 1 2 3 4 5; do
+            if git push; then
+              break
+            fi
+            echo "Push rejected, pulling and retrying ($i/5)..."
+            git pull --rebase origin main
+            sleep 2
+          done
       - name: Apply Kubernetes manifests
         run: |
           kubectl apply -f k8s/namespace.yaml
