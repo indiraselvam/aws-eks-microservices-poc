@@ -14,7 +14,13 @@ const pool = new Pool({
   password: process.env.DB_PASSWORD,
   max: 10,
   idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 5000
+  connectionTimeoutMillis: 5000,
+  ssl: {
+    // RDS requires TLS by default (rds.force_ssl). rejectUnauthorized:false
+    // skips CA validation, which is fine for this POC; for production, pull
+    // the RDS CA bundle in and validate it properly instead.
+    rejectUnauthorized: false
+  }
 });
 
 app.get("/api/health", async (_req, res) => {
