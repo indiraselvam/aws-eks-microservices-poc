@@ -24,7 +24,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: 926000797128.dkr.ecr.ap-south-1.amazonaws.com/poc-backend:36ddf7d5b576fc88e79949020c91112bf2b0cafd
+          image: 926000797128.dkr.ecr.ap-south-1.amazonaws.com/poc-backend:3033d1d6e7c7f3178903793d34c100e98aafa433
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
