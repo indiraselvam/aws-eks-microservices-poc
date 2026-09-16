@@ -24,7 +24,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: 926000797128.dkr.ecr.ap-south-1.amazonaws.com/poc-frontend:1a2f74f650cd84fd4e1f3e4a2b3b49eb6bf558c4
+          image: 000000000000.dkr.ecr.ap-south-1.amazonaws.com/poc-frontend:init
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -52,4 +52,5 @@ spec:
             allowPrivilegeEscalation: false
             capabilities:
               drop: ["ALL"]
+              add: ["CHOWN", "SETUID", "SETGID"]
       terminationGracePeriodSeconds: 30
