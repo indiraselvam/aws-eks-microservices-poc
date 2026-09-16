@@ -4,17 +4,38 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      aws_region:
+        description: "AWS region"
+        required: false
+        default: "ap-south-1"
+      eks_cluster_name:
+        description: "EKS cluster name"
+        required: false
+        default: "poc-eks"
+      namespace:
+        description: "Kubernetes namespace"
+        required: false
+        default: "microservices"
+      frontend_repo:
+        description: "Frontend ECR repo name"
+        required: false
+        default: "poc-frontend"
+      backend_repo:
+        description: "Backend ECR repo name"
+        required: false
+        default: "poc-backend"
 
 permissions:
   id-token: write
   contents: write
 
 env:
-  AWS_REGION: ap-south-1
-  EKS_CLUSTER_NAME: poc-eks
-  NAMESPACE: microservices
-  FRONTEND_REPO: poc-frontend
-  BACKEND_REPO: poc-backend
+  AWS_REGION: ${{ github.event.inputs.aws_region || 'ap-south-1' }}
+  EKS_CLUSTER_NAME: ${{ github.event.inputs.eks_cluster_name || 'poc-eks' }}
+  NAMESPACE: ${{ github.event.inputs.namespace || 'microservices' }}
+  FRONTEND_REPO: ${{ github.event.inputs.frontend_repo || 'poc-frontend' }}
+  BACKEND_REPO: ${{ github.event.inputs.backend_repo || 'poc-backend' }}
 
 jobs:
   build-deploy:
